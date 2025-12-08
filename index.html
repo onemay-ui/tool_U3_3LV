@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 2: Tools Practice</title>
+    <style>
+        :root {
+            --primary: #8b5cf6; /* U2 使用紫色系以區別 U1 */
+            --primary-dark: #7c3aed;
+            --success: #22c55e;
+            --error: #ef4444;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 480px; /* 手機寬度限制 */
+            background-color: var(--card);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 通用樣式 */
+        .screen {
+            display: none;
+            flex-direction: column;
+            padding: 24px;
+            flex: 1;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--text);
+        }
+
+        h1 { margin-bottom: 20px; }
+        h2 { margin-bottom: 10px; font-size: 1.2rem; color: #666; }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: transform 0.1s, background-color 0.2s;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* 頂部資訊列 (分數與計時) */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--primary-dark);
+            border: 1px solid #e2e8f0;
+        }
+
+        .timer-icon {
+            margin-right: 5px;
+        }
+
+        /* 題目卡片 */
+        .question-card {
+            background-color: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            flex-grow: 1; /* 讓卡片佔據剩餘空間 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: var(--primary-dark);
+            line-height: 1.4;
+        }
+
+        .audio-btn {
+            background-color: #ede9fe;
+            color: var(--primary-dark);
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .audio-btn:active { transform: scale(0.9); }
+        .audio-btn svg { width: 28px; height: 28px; fill: currentColor; }
+
+        /* 選項網格 */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: white;
+            border: 2px solid #e5e7eb;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--success);
+            color: #166534;
+        }
+
+        .option-btn.wrong {
+            background-color: #fee2e2;
+            border-color: var(--error);
+            color: #991b1b;
+        }
+
+        /* 進度條 */
+        .progress-bar {
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* 關卡指示器 */
+        .level-badge {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            align-self: center;
+        }
+
+        .feedback-msg {
+            text-align: center;
+            min-height: 24px;
+            margin-top: 5px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .correct-text { color: var(--success); }
+        .wrong-text { color: var(--error); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Unit 2 標籤 */
+        .unit-tag {
+            background-color: #ddd6fe;
+            color: #5b21b6;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- 1. 登入畫面 -->
+    <div id="screen-login" class="screen active" style="justify-content: center; align-items: center;">
+        <div class="unit-tag">UNIT 2</div>
+        <h1>Tools & Equipment</h1>
+        <div style="text-align: center; margin-bottom: 40px; color: #666;">
+            <p>Hammer, Vise, Pliers, Drill...</p>
+            <p style="font-size: 0.9rem;">Advanced Practice (含計時挑戰)</p>
+        </div>
+        
+        <div class="input-group" style="width: 100%;">
+            <input type="text" id="username" placeholder="請輸入你的名字 (Enter Name)">
+        </div>
+        <button class="btn" onclick="startGame()">開始挑戰 (Start Challenge)</button>
+    </div>
+
+    <!-- 2. 遊戲主畫面 (共用) -->
+    <div id="screen-game" class="screen">
+        <div style="text-align: center;">
+            <div class="level-badge" id="level-indicator">Level 1</div>
+        </div>
+        
+        <!-- 資訊列：分數與時間 -->
+        <div class="info-bar">
+            <span>Score: <span id="current-score">0</span></span>
+            <span>⏱️ <span id="timer-display">00:00</span></span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <h2 id="level-title" style="margin-top:0;">單字配對</h2>
+
+        <div class="question-card">
+            <button id="btn-speak" class="audio-btn" onclick="speakCurrentText()">
+                <svg viewBox="0 0 24 24"><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-4 0h-2.5l-5 5v5h5l5 5v-15z"/></svg>
+            </button>
+            <div id="question-text" class="question-text">Question Here</div>
+        </div>
+
+        <div id="feedback-msg" class="feedback-msg"></div>
+
+        <div id="options-container" class="options-grid">
+            <!-- JS 動態生成選項 -->
+        </div>
+
+        <button id="btn-next" class="btn" style="display: none;" onclick="nextQuestion()">下一題 (Next) ➜</button>
+    </div>
+
+    <!-- 3. 結果畫面 -->
+    <div id="screen-result" class="screen" style="justify-content: center; text-align: center;">
+        <h1>🎉 Mission Complete!</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 5px;">Player: <span id="result-name" style="font-weight:bold; color:var(--primary);">User</span></p>
+        
+        <div style="background: #f0f9ff; padding: 25px; border-radius: 16px; margin: 20px 0; border: 2px solid #e0f2fe;">
+            <div style="margin-bottom: 15px;">
+                <p style="margin:0; color:#666; font-size: 0.9rem;">Final Score</p>
+                <p style="font-size: 3.5rem; font-weight: bold; margin: 5px 0; color: var(--primary);" id="final-score">0</p>
+            </div>
+            <div style="border-top: 1px solid #cbd5e1; padding-top: 15px;">
+                <p style="margin:0; color:#666; font-size: 0.9rem;">Total Time</p>
+                <p style="font-size: 1.5rem; font-weight: bold; margin: 5px 0; color: #1e293b;" id="final-time">00:00</p>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="restartGame()">再挑戰一次 (Play Again)</button>
+    </div>
+</div>
+
+<script>
+    // --- U2 資料區 ---
+    const toolData = [
+        { 
+            id: 'hammer', 
+            en: 'Hammer', 
+            zh: '手鎚 (榔頭)', 
+            core: ['Strike nails', 'Fitting parts'], 
+            desc: 'It has a head and a handle. We strike objects with it. We use it for nails.' 
+        },
+        { 
+            id: 'vise', 
+            en: 'Vise', 
+            zh: '老虎鉗 (虎鉗)', 
+            core: ['Fix work-piece', 'Movable jaw'], 
+            desc: 'It has a fixed jaw and a movable jaw. It helps us clamp things.' 
+        },
+        { 
+            id: 'needle_pliers', 
+            en: 'Needle nose pliers', 
+            zh: '尖嘴鉗', 
+            core: ['Grip small objects', 'Bend wire'], 
+            desc: 'This tool has a long, small nose. We use it to grip or bend small objects.' 
+        },
+        { 
+            id: 'lineman_pliers', 
+            en: 'Lineman\'s pliers', 
+            zh: '剪線鉗', 
+            core: ['Cut wire', 'For electricians'], 
+            desc: 'This tool is for electricians. We use it to cut or bend wire and cable.' 
+        },
+        { 
+            id: 'steel_saw', 
+            en: 'Steel saw', 
+            zh: '鋼鋸', 
+            core: ['Cut hard steel', 'Saw blade'], 
+            desc: 'It has a blade. We use it to cut hard materials like steel.' 
+        },
+        { 
+            id: 'drill', 
+            en: 'Electric drill', 
+            zh: '電鑽', 
+            core: ['Make a hole', 'Battery driven'], 
+            desc: 'This tool makes a hole. It is driven by battery or power.' 
+        },
+        { 
+            id: 'c_clamp', 
+            en: 'C-clamp', 
+            zh: 'C型夾', 
+            core: ['Fix to platform', 'Turn screw'], 
+            desc: 'We use it to fix a work-piece to a platform. We turn the screw to fix it.' 
+        },
+        { 
+            id: 'grindstone', 
+            en: 'Grindstone', 
+            zh: '砂輪機', 
+            core: ['Sharpen metal', 'Grinding wheel'], 
+            desc: 'It is a machine with a wheel. We use it for grinding and sharpening metal parts.' 
+        }
+    ];
+
+    // --- 狀態管理 ---
+    let state = {
+        name: '',
+        currentLevel: 1,
+        qIndex: 0,
+        score: 0,
+        questions: [],
+        startTime: 0,
+        timerInterval: null
+    };
+
+    const synth = window.speechSynthesis;
+
+    // --- 初始化與導航 ---
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function startGame() {
+        const nameInput = document.getElementById('username');
+        if (!nameInput.value.trim()) {
+            alert('Please enter your name!');
+            return;
+        }
+        state.name = nameInput.value;
+        state.score = 0;
+        
+        // 啟動計時器
+        state.startTime = Date.now();
+        if(state.timerInterval) clearInterval(state.timerInterval);
+        state.timerInterval = setInterval(updateTimer, 1000);
+
+        startLevel(1);
+    }
+
+    // --- 計時器功能 ---
+    function updateTimer() {
+        const now = Date.now();
+        const diff = Math.floor((now - state.startTime) / 1000);
+        const min = Math.floor(diff / 60).toString().padStart(2, '0');
+        const sec = (diff % 60).toString().padStart(2, '0');
+        document.getElementById('timer-display').textContent = `${min}:${sec}`;
+    }
+
+    function getFormattedTime() {
+        return document.getElementById('timer-display').textContent;
+    }
+
+    function stopTimer() {
+        clearInterval(state.timerInterval);
+    }
+
+    function startLevel(level) {
+        state.currentLevel = level;
+        state.qIndex = 0;
+        
+        // 更新 UI
+        document.getElementById('level-indicator').textContent = `Level ${level}`;
+        document.getElementById('current-score').textContent = state.score;
+        
+        // 生成題目
+        generateQuestions(level);
+        showScreen('screen-game');
+        renderQuestion();
+    }
+
+    // --- 題目生成邏輯 (U2) ---
+    function generateQuestions(level) {
+        state.questions = [];
+        let pool = [...toolData]; // 複製資料
+
+        if (level === 1) {
+            // Level 1: 中文 -> 英文 (語音)
+            document.getElementById('level-title').textContent = "Listen & Match (聽音辨位)";
+            pool.sort(() => Math.random() - 0.5);
+            pool.forEach(item => {
+                let options = [item.en];
+                let distractors = toolData.filter(t => t.id !== item.id).sort(() => Math.random() - 0.5).slice(0, 2);
+                options.push(distractors[0].en, distractors[1].en);
+                options.sort(() => Math.random() - 0.5);
+
+                state.questions.push({
+                    type: 'L1',
+                    questionText: item.zh,
+                    speakText: item.en,
+                    correct: item.en,
+                    options: options,
+                    item: item
+                });
+            });
+
+        } else if (level === 2) {
+            // Level 2: 工具名 -> 核心描述 (語音)
+            document.getElementById('level-title').textContent = "Key Features (核心特徵)";
+            pool.sort(() => Math.random() - 0.5);
+            pool.forEach(item => {
+                let correctCore = item.core[Math.floor(Math.random() * item.core.length)];
+                
+                let options = [correctCore];
+                let otherTools = toolData.filter(t => t.id !== item.id);
+                // 取另外兩個工具的 Core
+                let d1 = otherTools[0].core[Math.floor(Math.random() * otherTools[0].core.length)];
+                let d2 = otherTools[1].core[Math.floor(Math.random() * otherTools[1].core.length)];
+                
+                options.push(d1, d2);
+                options.sort(() => Math.random() - 0.5);
+
+                state.questions.push({
+                    type: 'L2',
+                    questionText: item.en, 
+                    speakText: `Which phrase describes the ${item.en}?`,
+                    correct: correctCore,
+                    options: options,
+                    item: item
+                });
+            });
+        } else if (level === 3) {
+            // Level 3: 句子填空 (無語音)
+            document.getElementById('level-title').textContent = "Description (功能描述)";
+            pool.sort(() => Math.random() - 0.5);
+            pool.forEach(item => {
+                // 如果句子裡剛好有工具名稱，可以考慮替換成 ______ (雖然這份資料大都是 It/This tool)
+                let desc = item.desc;
+                
+                let options = [item.en];
+                let distractors = toolData.filter(t => t.id !== item.id).sort(() => Math.random() - 0.5).slice(0, 2);
+                options.push(distractors[0].en, distractors[1].en);
+                options.sort(() => Math.random() - 0.5);
+
+                state.questions.push({
+                    type: 'L3',
+                    questionText: desc,
+                    speakText: null, 
+                    correct: item.en,
+                    options: options,
+                    item: item
+                });
+            });
+        }
+    }
+
+    // --- 渲染與互動 ---
+    function renderQuestion() {
+        const q = state.questions[state.qIndex];
+        const total = state.questions.length;
+
+        document.getElementById('progress-fill').style.width = `${(state.qIndex / total) * 100}%`;
+        document.getElementById('question-text').textContent = q.questionText;
+        document.getElementById('feedback-msg').textContent = '';
+        document.getElementById('feedback-msg').className = 'feedback-msg';
+        document.getElementById('btn-next').style.display = 'none';
+
+        const speakBtn = document.getElementById('btn-speak');
+        if (q.speakText) {
+            speakBtn.style.visibility = 'visible';
+            setTimeout(() => speakCurrentText(), 600);
+        } else {
+            speakBtn.style.visibility = 'hidden';
+        }
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        q.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(btn, opt, q.correct);
+            container.appendChild(btn);
+        });
+    }
+
+    function speakCurrentText() {
+        const q = state.questions[state.qIndex];
+        if (q && q.speakText) {
+            synth.cancel();
+            const utter = new SpeechSynthesisUtterance(q.speakText);
+            utter.lang = 'en-US';
+            utter.rate = 0.9; 
+            synth.speak(utter);
+        }
+    }
+
+    function checkAnswer(btn, selected, correct) {
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        const isCorrect = selected === correct;
+        const feedback = document.getElementById('feedback-msg');
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            state.score += 10;
+            document.getElementById('current-score').textContent = state.score;
+            feedback.textContent = "Correct! (答對了)";
+            feedback.classList.add('correct-text');
+        } else {
+            btn.classList.add('wrong');
+            feedback.textContent = `Answer: ${correct}`;
+            feedback.classList.add('wrong-text');
+            allBtns.forEach(b => {
+                if (b.textContent === correct) b.classList.add('correct');
+            });
+        }
+
+        document.getElementById('btn-next').style.display = 'flex';
+    }
+
+    function nextQuestion() {
+        state.qIndex++;
+        if (state.qIndex < state.questions.length) {
+            renderQuestion();
+        } else {
+            if (state.currentLevel < 3) {
+                alert(`Level ${state.currentLevel} Completed! Next Level.`);
+                startLevel(state.currentLevel + 1);
+            } else {
+                stopTimer();
+                showResult();
+            }
+        }
+    }
+
+    function showResult() {
+        showScreen('screen-result');
+        document.getElementById('result-name').textContent = state.name;
+        document.getElementById('final-score').textContent = state.score;
+        document.getElementById('final-time').textContent = getFormattedTime();
+    }
+
+    function restartGame() {
+        state.score = 0;
+        showScreen('screen-login');
+        // 重置時先不開始計時，等按下 Start 才開始
+    }
+</script>
+
+</body>
+</html>

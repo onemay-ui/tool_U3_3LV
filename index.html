@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit 2: Tools Practice</title>
+    <title>Unit 3: Measurement & Electrical</title>
     <style>
         :root {
-            --primary: #8b5cf6; /* U2 使用紫色系以區別 U1 */
-            --primary-dark: #7c3aed;
+            /* U3 使用藍綠色/青色系以區別 U1(藍) 和 U2(紫) */
+            --primary: #0891b2; 
+            --primary-dark: #0e7490;
             --success: #22c55e;
             --error: #ef4444;
             --bg: #f3f4f6;
@@ -55,7 +56,7 @@
             color: var(--text);
         }
 
-        h1 { margin-bottom: 20px; }
+        h1 { margin-bottom: 20px; font-size: 1.8rem; }
         h2 { margin-bottom: 10px; font-size: 1.2rem; color: #666; }
 
         .btn {
@@ -103,17 +104,13 @@
         .info-bar {
             display: flex;
             justify-content: space-between;
-            background-color: #f8fafc;
+            background-color: #f0fdfa; /* 淺青色背景 */
             padding: 10px 15px;
             border-radius: 12px;
             margin-bottom: 15px;
             font-weight: bold;
             color: var(--primary-dark);
-            border: 1px solid #e2e8f0;
-        }
-
-        .timer-icon {
-            margin-right: 5px;
+            border: 1px solid #ccfbf1;
         }
 
         /* 題目卡片 */
@@ -124,7 +121,7 @@
             margin-bottom: 24px;
             text-align: center;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-            flex-grow: 1; /* 讓卡片佔據剩餘空間 */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -140,7 +137,7 @@
         }
 
         .audio-btn {
-            background-color: #ede9fe;
+            background-color: #cffafe;
             color: var(--primary-dark);
             border-radius: 50%;
             width: 56px;
@@ -233,10 +230,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Unit 2 標籤 */
+        /* Unit 3 標籤 */
         .unit-tag {
-            background-color: #ddd6fe;
-            color: #5b21b6;
+            background-color: #ccfbf1;
+            color: #0f766e;
             padding: 4px 12px;
             border-radius: 6px;
             font-size: 0.8rem;
@@ -251,11 +248,11 @@
 <div id="app">
     <!-- 1. 登入畫面 -->
     <div id="screen-login" class="screen active" style="justify-content: center; align-items: center;">
-        <div class="unit-tag">UNIT 2</div>
-        <h1>Tools & Equipment</h1>
+        <div class="unit-tag">UNIT 3</div>
+        <h1>Measurement & Electrical</h1>
         <div style="text-align: center; margin-bottom: 40px; color: #666;">
-            <p>Hammer, Vise, Pliers, Drill...</p>
-            <p style="font-size: 0.9rem;">Advanced Practice (含計時挑戰)</p>
+            <p>Caliper, Multimeter, Solder...</p>
+            <p style="font-size: 0.9rem;">關鍵量測與電氣設備</p>
         </div>
         
         <div class="input-group" style="width: 100%;">
@@ -319,63 +316,63 @@
 </div>
 
 <script>
-    // --- U2 資料區 ---
+    // --- U3 資料區 (根據用戶提供的 U3 內容整理) ---
     const toolData = [
         { 
-            id: 'hammer', 
-            en: 'Hammer', 
-            zh: '手鎚 (榔頭)', 
-            core: ['Strike nails', 'Fitting parts'], 
-            desc: 'It has a head and a handle. We strike objects with it. We use it for nails.' 
+            id: 'measuring_tape', 
+            en: 'Measuring tape', 
+            zh: '捲尺', 
+            core: ['Measure length', 'Flexible ruler'], 
+            desc: 'It is a flexible ruler. We use it to measure length.' 
         },
         { 
-            id: 'vise', 
-            en: 'Vise', 
-            zh: '老虎鉗 (虎鉗)', 
-            core: ['Fix work-piece', 'Movable jaw'], 
-            desc: 'It has a fixed jaw and a movable jaw. It helps us clamp things.' 
+            id: 'caliper', 
+            en: 'Caliper', 
+            zh: '卡尺', 
+            core: ['Precise measurement', 'Two tips'], 
+            desc: 'It is for more precise measurements. It uses two tips to get the size.' 
         },
         { 
-            id: 'needle_pliers', 
-            en: 'Needle nose pliers', 
-            zh: '尖嘴鉗', 
-            core: ['Grip small objects', 'Bend wire'], 
-            desc: 'This tool has a long, small nose. We use it to grip or bend small objects.' 
+            id: 'micrometer', 
+            en: 'Micrometer', 
+            zh: '分釐卡 (測微計)', 
+            core: ['Measure small things', 'Very accurate'], 
+            desc: 'It measures very small things. It is very accurate. It is also called a screw gauge.' 
         },
         { 
-            id: 'lineman_pliers', 
-            en: 'Lineman\'s pliers', 
-            zh: '剪線鉗', 
-            core: ['Cut wire', 'For electricians'], 
-            desc: 'This tool is for electricians. We use it to cut or bend wire and cable.' 
+            id: 'multimeter', 
+            en: 'Multimeter', 
+            zh: '萬用電表', 
+            core: ['Measure volt & current', 'Electronic device'], 
+            desc: 'It is an electronic device. It can measure volt, current, and resistance.' 
         },
         { 
-            id: 'steel_saw', 
-            en: 'Steel saw', 
-            zh: '鋼鋸', 
-            core: ['Cut hard steel', 'Saw blade'], 
-            desc: 'It has a blade. We use it to cut hard materials like steel.' 
+            id: 'soldering_iron', 
+            en: 'Soldering iron', 
+            zh: '烙鐵', 
+            core: ['Melt solder', 'Make a strong joint'], 
+            desc: 'It gets very hot. We use it to heat and melt solder. It makes a strong joint.' 
         },
         { 
-            id: 'drill', 
-            en: 'Electric drill', 
-            zh: '電鑽', 
-            core: ['Make a hole', 'Battery driven'], 
-            desc: 'This tool makes a hole. It is driven by battery or power.' 
+            id: 'screw', 
+            en: 'Screw', 
+            zh: '螺絲', 
+            core: ['Helical thread', 'Hold together'], 
+            desc: 'A screw has a helical thread. It is a fastener to hold together objects.' 
         },
         { 
-            id: 'c_clamp', 
-            en: 'C-clamp', 
-            zh: 'C型夾', 
-            core: ['Fix to platform', 'Turn screw'], 
-            desc: 'We use it to fix a work-piece to a platform. We turn the screw to fix it.' 
+            id: 'washer', 
+            en: 'Washer', 
+            zh: '墊圈', 
+            core: ['Distribute load', 'Disk-shape plate'], 
+            desc: 'It is a disk-shape plate. It helps to distribute the load of a screw.' 
         },
         { 
-            id: 'grindstone', 
-            en: 'Grindstone', 
-            zh: '砂輪機', 
-            core: ['Sharpen metal', 'Grinding wheel'], 
-            desc: 'It is a machine with a wheel. We use it for grinding and sharpening metal parts.' 
+            id: 'hose_clamp', 
+            en: 'Hose clamp', 
+            zh: '皮管夾', 
+            core: ['Tighten a hose', 'Seal a fitting'], 
+            desc: 'This device is used to tighten and seal a hose onto a fitting.' 
         }
     ];
 
@@ -446,7 +443,7 @@
         renderQuestion();
     }
 
-    // --- 題目生成邏輯 (U2) ---
+    // --- 題目生成邏輯 (U3) ---
     function generateQuestions(level) {
         state.questions = [];
         let pool = [...toolData]; // 複製資料
@@ -501,7 +498,7 @@
             document.getElementById('level-title').textContent = "Description (功能描述)";
             pool.sort(() => Math.random() - 0.5);
             pool.forEach(item => {
-                // 如果句子裡剛好有工具名稱，可以考慮替換成 ______ (雖然這份資料大都是 It/This tool)
+                // 遮蔽句子中的關鍵字 (避免直接送分)
                 let desc = item.desc;
                 
                 let options = [item.en];
